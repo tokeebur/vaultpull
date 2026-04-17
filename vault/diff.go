@@ -14,6 +14,11 @@ type EnvDiff struct {
 	Unchanged map[string]string
 }
 
+// HasChanges returns true if there are any added, changed, or removed keys
+func (d EnvDiff) HasChanges() bool {
+	return len(d.Added) > 0 || len(d.Changed) > 0 || len(d.Removed) > 0
+}
+
 // ParseEnvFile reads an existing .env file into a key/value map
 func ParseEnvFile(path string) (map[string]string, error) {
 	result := make(map[string]string)
