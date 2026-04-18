@@ -78,3 +78,20 @@ func TestRenderTemplate_FilePermissions(t *testing.T) {
 		t.Errorf("expected 0600 permissions, got %v", info.Mode().Perm())
 	}
 }
+
+func TestRenderTemplate_DestNotCreatedOnError(t *testing.T) {
+	dir := t.TempDir()
+	tmplPath := filepath.Join(dir, "app.env.tmpl")
+	destPath := filepath.Join(dir, "app.env")
+
+	if err := os.WriteFile(tmplPath, []byte("VAL={{.missing}}"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Rendering should fail due to missing key; dest file should not be created.
+	_ = RenderTemplate(tmplPath, destPath, map[string]interface{}{})
+
+	if _, err := os.Stat(destPath); err == nil {
+		t.Error("expected dest file to not exist after failed render")
+	}
+}
