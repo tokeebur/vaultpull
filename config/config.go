@@ -1,9 +1,12 @@
 package config
-t"errors"
+
+import (
+	"errors"
 	"os"
 )
 
-// Config holds the runtime configuration for vntype Config struct {
+// Config holds the runtime configuration for vaultpull.
+type Config struct {
 	VaultAddr  string
 	VaultToken string
 	SecretPath string
@@ -36,4 +39,18 @@ func Load(secretPath, outputFile string) (*Config, error) {
 		SecretPath: secretPath,
 		OutputFile: outputFile,
 	}, nil
+}
+
+// Validate checks that all required Config fields are populated.
+func (c *Config) Validate() error {
+	if c.VaultAddr == "" {
+		return errors.New("VaultAddr must not be empty")
+	}
+	if c.VaultToken == "" {
+		return errors.New("VaultToken must not be empty")
+	}
+	if c.SecretPath == "" {
+		return errors.New("SecretPath must not be empty")
+	}
+	return nil
 }
