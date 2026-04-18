@@ -51,3 +51,23 @@ func SaveTagMap(path string, tagMap map[string][]string) error {
 	}
 	return w.Flush()
 }
+
+// TagsForKey returns the tags associated with the given key, or nil if the key
+// is not present in the tag map.
+func TagsForKey(tagMap map[string][]string, key string) []string {
+	tags, ok := tagMap[key]
+	if !ok {
+		return nil
+	}
+	return tags
+}
+
+// AddTag adds a tag to the given key in the tag map if it is not already present.
+func AddTag(tagMap map[string][]string, key, tag string) {
+	for _, t := range tagMap[key] {
+		if t == tag {
+			return
+		}
+	}
+	tagMap[key] = append(tagMap[key], tag)
+}
