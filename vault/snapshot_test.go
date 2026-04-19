@@ -61,3 +61,18 @@ func TestSaveSnapshot_FilePermissions(t *testing.T) {
 		t.Errorf("expected 0600, got %o", info.Mode().Perm())
 	}
 }
+
+func TestSaveSnapshot_EmptySecrets(t *testing.T) {
+	dir := t.TempDir()
+	out, err := SaveSnapshot(dir, "secret/empty", map[string]string{})
+	if err != nil {
+		t.Fatalf("unexpected error saving empty secrets: %v", err)
+	}
+	s, err := LoadSnapshot(out)
+	if err != nil {
+		t.Fatalf("load: %v", err)
+	}
+	if len(s.Secrets) != 0 {
+		t.Errorf("expected empty secrets map, got %d entries", len(s.Secrets))
+	}
+}
