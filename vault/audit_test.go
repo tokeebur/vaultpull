@@ -67,3 +67,28 @@ func TestReadAuditLog_NotExist(t *testing.T) {
 		t.Errorf("expected nil entries, got %v", entries)
 	}
 }
+
+func TestAppendAuditLog_PreservesOrder(t *testing.T) {
+	dir := t.TempDir()
+	logPath := filepath.Join(dir, "audit.log")
+
+	paths := []string{"secret/data/first", "secret/data/second", "secret/data/third"}
+	for _, p := range paths {
+		if err := AppendAuditLog(logPath, AuditEntry{SecretPath: p}); err != nil {
+			t.Fatalf("AppendAuditLog error: %v", err)
+		}
+	}
+
+	got, err := ReadAuditLog(logPath)
+	if err != nil {
+		t.Fatalf("ReadAuditLog error: %v", err)
+	}
+	if len(got) != len(paths) {
+		t.Fatalf("expected %d entries, got %d", len(paths), len(got))
+	}
+	for i, p := range paths {
+		if got[i].SecretPath != p {
+			t.Errorf("entry %d: expected SecretPath %q, got %q", i, p, got[i].SecretPath)
+		}
+	}
+}
