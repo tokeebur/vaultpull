@@ -76,6 +76,13 @@ func TestSaveAndLoadPolicyFile(t *testing.T) {
 	if len(loaded.Rules) != 2 {
 		t.Fatalf("expected 2 rules, got %d", len(loaded.Rules))
 	}
+	// Verify round-tripped rule contents match the originals.
+	if loaded.Rules[0].Pattern != "^DB_" || loaded.Rules[0].Allow != true {
+		t.Fatalf("unexpected first rule: %+v", loaded.Rules[0])
+	}
+	if loaded.Rules[1].Pattern != "^SECRET_" || loaded.Rules[1].Allow != false {
+		t.Fatalf("unexpected second rule: %+v", loaded.Rules[1])
+	}
 }
 
 func TestLoadPolicyFile_NotExist(t *testing.T) {
